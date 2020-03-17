@@ -30,7 +30,9 @@ task seed_from_csv: :environment do
   puts 'Merchants Seeded'
 
   CSV.foreach('db/csv_seeds/items.csv', headers: true) do |row|
-    Item.create(row.to_hash)
+    item = Item.new(row.to_hash)
+    item.unit_price = (item.unit_price / 100)
+    item.save
   end
   puts 'Items Seeded'
 
@@ -39,7 +41,9 @@ task seed_from_csv: :environment do
   end
 
   CSV.foreach('db/csv_seeds/invoice_items.csv', headers: true) do |row|
-    InvoiceItem.create(row.to_hash)
+    invoiceitem = InvoiceItem.new(row.to_hash)
+    invoiceitem.unit_price = (invoiceitem.unit_price / 100)
+    invoiceitem.save
   end
   puts 'Invoices Seeded'
 
