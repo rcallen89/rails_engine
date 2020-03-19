@@ -87,4 +87,19 @@ RSpec.describe 'Merchant API', type: :request do
 
     expect(merchant[:data][:attributes]).to have_key(:name)
   end
+
+  it 'can return all the items related to a merchant' do
+    merchant = create(:merchant)
+    
+    10.times do
+      create(:item, merchant: merchant)
+    end
+
+    get "/api/v1/merchants/#{merchant.id}/items"
+
+    expect(response).to be_successful
+    merchant_items = JSON.parse(response.body, symbolize_names: true)
+
+    expect(merchant_items[:data].length).to eq(10)
+  end
 end
