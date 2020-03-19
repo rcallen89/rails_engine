@@ -67,6 +67,46 @@ RSpec.describe 'Item API', type: :request do
     expect(item_json[:data][:attributes][:description]).to eq(item_params[:description])
     expect(item_json[:data][:attributes][:unit_price]).to eq(15.5)
     expect(item_json[:data][:attributes][:merchant_id]).to eq(item_params[:merchant_id])
+  end
 
+  it 'can update an item' do
+    item = create(:item)
+    item_update_params = {name: 'Updated Name'}
+
+    patch "/api/v1/items/#{item.id}", params: item_update_params
+
+    expect(response).to be_successful
+
+    updated = Item.last
+    updated_json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(updated.name).to_not eq(item.name)
+    expect(updated.name).to eq("Updated Name")
+
+    expect(updated_json[:data][:attributes][:name]).to eq("Updated Name")
+    expect(updated_json[:data][:attributes][:description]).to eq(item.description)
+    expect(updated_json[:data][:attributes][:unit_price]).to eq(item.unit_price)
+    expect(updated_json[:data][:attributes][:merchant_id]).to eq(item.merchant_id)
+  end
+
+  it 'can delete an item' do
+    create_list(:item, 3)
+    require 'pry'; binding.pry
+
+    expect(Item.count).to eq(3)
+
+    item = Item.last
+
+    delete "/api/v1/items/#{item.id}"
+
+    expect(response).to be_successful
+    expect(Item.count).to eq(2)
+
+    item = JSON.parse(response.body, symbolize_names: true)
+
+    expect(item[:data][:attributes]).to have_key(:name)
+    expect(item[:data][:attributes]).to have_key(:description)
+    expect(item[:data][:attributes]).to have_key(:unit_price)
+    expect(item[:data][:attributes]).to have_key(:merchant_id)
   end
 end
