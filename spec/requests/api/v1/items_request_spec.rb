@@ -108,4 +108,16 @@ RSpec.describe 'Item API', type: :request do
     expect(item[:data][:attributes]).to have_key(:unit_price)
     expect(item[:data][:attributes]).to have_key(:merchant_id)
   end
+
+  it 'can return the merchant for an item' do
+    merchant = create(:merchant)
+    item = create(:item, merchant: merchant)
+
+    get "/api/v1/items/#{item.id}/merchant"
+
+    expect(response).to be_successful
+    merchant_json = JSON.parse(response.body, symbolize_names: true)
+
+    expect(merchant_json[:data][:attributes][:name]).to eq(merchant.name)
+  end
 end
