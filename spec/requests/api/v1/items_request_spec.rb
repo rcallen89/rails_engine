@@ -91,7 +91,6 @@ RSpec.describe 'Item API', type: :request do
 
   it 'can delete an item' do
     create_list(:item, 3)
-    require 'pry'; binding.pry
 
     expect(Item.count).to eq(3)
 
