@@ -18,33 +18,37 @@ task seed_from_csv: :environment do
   # Merchant.delete_all
 
   CSV.foreach('db/csv_seeds/customers.csv', headers: true) do |row|
-    customer = Customer.new(row.to_hash)
+    customer = Customer.new(row.to_a[1..-1].to_h)
     customer.id = row[0]
     customer.save
   end
   puts 'Customers Seeded'
 
   CSV.foreach('db/csv_seeds/merchants.csv', headers: true) do |row|
-    Merchant.create(row.to_hash)
+    Merchant.create(row.to_a[1..-1].to_h)
   end
   puts 'Merchants Seeded'
 
   CSV.foreach('db/csv_seeds/items.csv', headers: true) do |row|
-    Item.create(row.to_hash)
+    item = Item.new(row.to_a[1..-1].to_h)
+    item.unit_price = (item.unit_price / 100)
+    item.save
   end
   puts 'Items Seeded'
 
   CSV.foreach('db/csv_seeds/invoices.csv', headers: true) do |row|
-    Invoice.create(row.to_hash)
+    Invoice.create(row.to_a[1..-1].to_h)
   end
 
   CSV.foreach('db/csv_seeds/invoice_items.csv', headers: true) do |row|
-    InvoiceItem.create(row.to_hash)
+    invoiceitem = InvoiceItem.new(row.to_a[1..-1].to_h)
+    invoiceitem.unit_price = (invoiceitem.unit_price / 100)
+    invoiceitem.save
   end
   puts 'Invoices Seeded'
 
   CSV.foreach('db/csv_seeds/transactions.csv', headers: true) do |row|
-    Transaction.create(row.to_hash)
+    Transaction.create(row.to_a[1..-1].to_h)
   end
   puts 'Transactions Seeded'
   # Dir.foreach('db/csv_seeds') do |csv|
